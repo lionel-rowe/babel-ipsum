@@ -1,0 +1,29 @@
+{
+	"lock": false,
+	"imports": {
+		"@std/assert": "jsr:@std/assert@^0.225.1"
+	},
+	"fmt": {
+		"semiColons": false,
+		"useTabs": true,
+		"lineWidth": 120,
+		"indentWidth": 4,
+		"singleQuote": true,
+		"proseWrap": "preserve",
+		"exclude": [
+			"node_modules",
+			"fresh.gen.ts",
+			"*.md",
+			"vendor",
+			"UnicodeData.json",
+			"UnicodeData.txt",
+			"**/_gen.ts",
+			"**/*.gen.js",
+			"**/*.gen.ts",
+			"_fixtures",
+			"static/qa",
+			"**/*.min.*",
+			"core/qa/clearlylocal.pythonanywhere.com"
+		]
+	}
+}
