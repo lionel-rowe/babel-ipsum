@@ -66,7 +66,7 @@ Deno.test(BabelIpsum.name, async (t) => {
 
 		assertEquals(
 			text.toString(),
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Condimentum aenean fusce class tincidunt potenti dui sollicitudin sem cubilia aptent magna hendrerit praesent potenti ad, molestie. Eleifend venenatis dapibus eu odio conubia tempus netus, suspendisse ullamcorper, interdum felis eros.',
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Est et se est erant ipsos si affectus locus esse non quem ea vera epicuro et, te. Sed maximis aut quam magis quae cognitionem ratio, bona democritum, tamen de enim.',
 		)
 	})
 

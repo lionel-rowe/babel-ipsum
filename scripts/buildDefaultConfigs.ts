@@ -4,10 +4,7 @@ import type { BabelIpsum, BabelIpsumConfig } from '../src/mod.ts'
 import type { Locale } from './scrape.ts'
 import scraped from './scraped/all.json' with { type: 'json' }
 
-type ConfigFromScrapedConfig = { maxVocabSize?: number; wordMatcher?: Pick<RegExp, 'test'>; locale: Locale | 'lorem' }
-
-const loremContent =
-	`a ac accumsan ad adipiscing aenean aliquam aliquet amet ante aptent arcu at auctor bibendum blandit class commodo condimentum congue consectetur consequat conubia convallis cras cubilia cum curabitur curae dapibus diam dictum dictumst dignissim dolor donec dui duis egestas eget eleifend elementum elit enim erat eros est et etiam eu euismod facilisi faucibus felis fermentum feugiat fringilla fusce gravida habitant habitasse hac hendrerit himenaeos iaculis id imperdiet in inceptos integer interdum ipsum justo lacinia lacus laoreet lectus leo ligula litora lobortis lorem luctus maecenas magna magnis malesuada massa mattis mauris metus mi molestie mollis montes morbi mus nam nascetur natoque nec neque netus nisi nisl non nostra nulla nullam nunc odio orci ornare parturient pellentesque penatibus per pharetra phasellus placerat platea porta porttitor posuere potenti praesent pretium primis proin pulvinar purus quam quis quisque rhoncus ridiculus risus rutrum sagittis sapien scelerisque sed sem semper senectus sit sociis sociosqu sodales sollicitudin suscipit suspendisse taciti tellus tempor tempus tincidunt torquent tortor turpis ullamcorper ultrices ultricies urna varius vehicula vel velit venenatis vestibulum vitae vivamus viverra volutpat vulputate`
+type ConfigFromScrapedConfig = { maxVocabSize?: number; wordMatcher?: Pick<RegExp, 'test'>; locale: Locale }
 
 function configFromScraped(
 	metaConfig: ConfigFromScrapedConfig,
@@ -19,7 +16,7 @@ function configFromScraped(
 		...createConfig({
 			...metaConfig,
 			locale: locale === 'lorem' ? 'xx' : locale,
-			content: locale === 'lorem' ? loremContent : scraped[locale].content,
+			content: scraped[locale].content,
 		}),
 	}
 }
@@ -78,7 +75,7 @@ export const metaConfigs = {
 		],
 	},
 } satisfies Record<
-	Locale | 'lorem',
+	Locale,
 	Omit<ConfigFromScrapedConfig, 'locale'> & Partial<Omit<ConstructorParameters<typeof BabelIpsum>[0], 'vocabulary'>>
 >
 
