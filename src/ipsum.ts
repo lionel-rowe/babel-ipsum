@@ -15,13 +15,13 @@ const defaults: Omit<BabelIpsumConfigFull, RequiredConfigOptions> = {
 	wordSeparators: [
 		{ weight: 1, separator: ' ' },
 		{ weight: 0.075, separator: ', ' },
-		{ weight: 0.005, separator: ': ' },
-		{ weight: 0.0025, separator: '; ' },
+		{ weight: 0.0005, separator: ': ' },
+		{ weight: 0.001, separator: '; ' },
 	],
 	sentenceWrappers: [
 		{ weight: 1, start: '', end: '.' },
-		{ weight: 0.05, start: '', end: '?' },
-		{ weight: 0.05, start: '', end: '!' },
+		{ weight: 0.01, start: '', end: '?' },
+		{ weight: 0.005, start: '', end: '!' },
 	],
 }
 
@@ -78,9 +78,12 @@ function assertNonEmpty<T>(array: readonly T[], msg?: string): asserts array is 
 export class BabelIpsum {
 	readonly config: BabelIpsumConfigFull
 	random = Math.random
+	genericWordSeparator: string
 
 	constructor(config: BabelIpsumConfig) {
 		this.config = { ...defaults, ...config }
+
+		this.genericWordSeparator = [...this.config.wordSeparators].sort((a, b) => b.weight - a.weight)[0].separator
 
 		for (const k of ['vocabulary', 'sentenceWrappers', 'wordSeparators'] as const) {
 			assertNonEmpty<unknown>(this.config[k], k)
@@ -171,15 +174,22 @@ export class BabelIpsum {
 		const { min, max } = options.wordsPerSentence
 		const length = this.#randBetween(min, max)
 
-		let out = ''
 		const words = this.words()
-		for (let i = 0; i < length; ++i) {
-			if (i) out += this.#weighted(this.config.wordSeparators).separator
-			out += words.next().value
-		}
-
 		const { start, end } = this.#weighted(this.config.sentenceWrappers)
-		return (start ?? '') + this.#capitalize(out) + end
+
+		return (start ?? '') + this.#capitalize(
+			Array.from({ length }).flatMap((_, i) => {
+				const word = words.next().value
+				return i
+					? [
+						i < 3 || i > length - 3
+							? this.genericWordSeparator
+							: this.#weighted(this.config.wordSeparators).separator,
+						word,
+					]
+					: [word]
+			}).join(''),
+		) + end
 	}
 
 	#sentences(options: Pick<GenerateOptions, 'wordsPerSentence' | 'sentencesPerParagraph'>): string[] {

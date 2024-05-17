@@ -67,7 +67,7 @@ Deno.test(BabelIpsum.name, async (t) => {
 
 		assertEquals(
 			text.toString(),
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Est et se est erant ipsos si affectus locus esse non quem ea vera epicuro et, te. Sed maximis aut quam magis quae cognitionem ratio, bona democritum, tamen de enim.',
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Res sunt igitur est et se est erant ipsos si affectus locus esse non quem ea vera bene. Et negant te noster sed maximis aut quam magis quae cognitionem, ratio bona, democritum tamen de enim rationibus ad e.',
 		)
 	})
 

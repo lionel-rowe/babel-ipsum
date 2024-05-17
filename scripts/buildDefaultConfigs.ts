@@ -52,13 +52,13 @@ export const metaConfigs = {
 		wordSeparators: [
 			{ weight: 5, separator: '' },
 			{ weight: 0.075, separator: '，' },
-			{ weight: 0.005, separator: '：' },
-			{ weight: 0.005, separator: '、' },
+			{ weight: 0.0005, separator: '：' },
+			{ weight: 0.001, separator: '、' },
 		],
 		sentenceWrappers: [
 			{ weight: 1, end: '。' },
-			{ weight: 0.05, end: '？' },
-			{ weight: 0.05, end: '！' },
+			{ weight: 0.01, end: '？' },
+			{ weight: 0.005, end: '！' },
 		],
 	},
 	ar: {
@@ -70,8 +70,8 @@ export const metaConfigs = {
 		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn'),
 		sentenceWrappers: [
 			{ weight: 1, end: '.' },
-			{ weight: 0.05, start: '¿', end: '?' },
-			{ weight: 0.05, start: '¡', end: '!' },
+			{ weight: 0.01, start: '¿', end: '?' },
+			{ weight: 0.005, start: '¡', end: '!' },
 		],
 	},
 } satisfies Record<
