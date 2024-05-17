@@ -36,7 +36,9 @@ type GenerateOptions = {
 	paragraphsPerText: LengthBoundaries
 }
 
-class TextContents extends Array<string[]> {
+class TextContents extends (Array as {
+	new (...args: string[][]): Pick<Array<string[]>, number | typeof Symbol.iterator>
+}) {
 	#sentenceSeparator: string = ' '
 
 	static fromParts(textParts: string[][], sentenceSeparator: string): TextContents {
@@ -49,12 +51,20 @@ class TextContents extends Array<string[]> {
 		super(...textParts)
 	}
 
-	#joinSentences(sentences: string[]): string {
-		return sentences.join(this.#sentenceSeparator)
+	*paragraphs(): Generator<string, undefined, undefined> {
+		for (const x of this) {
+			yield x.join(this.#sentenceSeparator)
+		}
 	}
 
-	override toString(): string {
-		return this.map(this.#joinSentences.bind(this)).join('\n\n')
+	*sentences(): Generator<string, undefined, undefined> {
+		for (const x of this) {
+			yield* x
+		}
+	}
+
+	toString(): string {
+		return [...this.paragraphs()].join('\n\n')
 	}
 }
 
@@ -118,6 +128,7 @@ export class BabelIpsum {
 
 	/**
 	 * Randomly generate individual words.
+	 * Returns an infinite iterator, so care needs to be taken to avoid infinite loops.
 	 *
 	 * @example
 	 * ```ts
@@ -129,7 +140,7 @@ export class BabelIpsum {
 	 * // example output: [ "ultrices", "suscipit", "donec", "proin", "est" ]
 	 * ```
 	 */
-	*words(): Generator<string, undefined, undefined> {
+	*words(): Generator<string, never, undefined> {
 		let prevWord = ''
 		whileLoop: while (true) {
 			// try 10 times for a unique next word

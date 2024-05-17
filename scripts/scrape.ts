@@ -30,24 +30,26 @@ const scrapeConfigs: Record<Locale, ScrapeConfig> = {
 	ar: wikiConfig('ar'),
 }
 
-const configs = Object.fromEntries(
-	await Promise.all(
-		Object.entries(scrapeConfigs).map(async ([locale, config]) => {
-			const { url, selector, rejector, prepend } = config
-			const res = await fetch(url)
-			const $ = load(await res.text())
+if (import.meta.main) {
+	const configs = Object.fromEntries(
+		await Promise.all(
+			Object.entries(scrapeConfigs).map(async ([locale, config]) => {
+				const { url, selector, rejector, prepend } = config
+				const res = await fetch(url)
+				const $ = load(await res.text())
 
-			const $content = $(selector).eq(0)
-			$content.find(rejector).remove()
+				const $content = $(selector).eq(0)
+				$content.find(rejector).remove()
 
-			const content = [
-				prepend,
-				new AnchorMe()[Symbol.replace]($content.text(), ''),
-			].filter(Boolean).join('\n\n')
+				const content = [
+					prepend,
+					new AnchorMe()[Symbol.replace]($content.text(), ''),
+				].filter(Boolean).join('\n\n')
 
-			return [locale, { content, url }] as const
-		}),
-	),
-) as Record<Locale, { content: string; url: string }>
+				return [locale, { content, url }] as const
+			}),
+		),
+	) as Record<Locale, { content: string; url: string }>
 
-await Deno.writeTextFile('./scripts/scraped/all.json', JSON.stringify(configs, null, '\t') + '\n')
+	await Deno.writeTextFile('./scripts/scraped/all.json', JSON.stringify(configs, null, '\t') + '\n')
+}

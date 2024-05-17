@@ -7,6 +7,7 @@ const configs = Object.fromEntries(
 	await Promise.all(['lorem', ...locales].map(async (locale) => {
 		return [
 			locale,
+			// @ts-ignore slow type checking
 			(await import(`./configs/${locale}.ts`)).default,
 		] as const
 	})),
@@ -80,21 +81,27 @@ Deno.test(BabelIpsum.name, async (t) => {
 		for (const [key, test] of Object.entries(tests)) {
 			await t.step(key, () => {
 				const locale = key as keyof typeof configs
-				const ipsum = new BabelIpsum(configs[locale])
+				const config = configs[locale]
+				const ipsum = new BabelIpsum(config)
 				ipsum.random = prng(SEED)
 
-				const config = {
+				const options = {
 					paragraphsPerText: { min: 3, max: 5 },
 					sentencesPerParagraph: { min: 3, max: 6 },
 					wordsPerSentence: { min: 8, max: 25 },
 				}
 
-				const text = ipsum.text(config)
+				const text = ipsum.text(options)
+				const sentences = [...text.sentences()]
+				assertEquals([...text].flat(), sentences)
+
+				const paragraphs = [...text.paragraphs()]
 				const stringified = new Set([
 					text.toString(),
 					String(text),
 					`${text}`,
 					'' + text + '',
+					paragraphs.join('\n\n'),
 				])
 				assertEquals(stringified.size, 1, 'All ways of stringifying ParagraphContents give same result')
 				const [joined] = stringified
