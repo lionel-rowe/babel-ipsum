@@ -6,13 +6,13 @@ const config: BabelIpsumConfig = {
 	'wordSeparators': [
 		{ 'weight': 5, 'separator': '' },
 		{ 'weight': 0.075, 'separator': '，' },
-		{ 'weight': 0.005, 'separator': '：' },
-		{ 'weight': 0.005, 'separator': '、' },
+		{ 'weight': 0.0005, 'separator': '：' },
+		{ 'weight': 0.001, 'separator': '、' },
 	],
 	'sentenceWrappers': [
 		{ 'weight': 1, 'end': '。' },
-		{ 'weight': 0.05, 'end': '？' },
-		{ 'weight': 0.05, 'end': '！' },
+		{ 'weight': 0.01, 'end': '？' },
+		{ 'weight': 0.005, 'end': '！' },
 	],
 	'vocabulary': [
 		{ 'word': '的', 'weight': 199 },

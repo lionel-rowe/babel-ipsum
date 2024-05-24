@@ -74,6 +74,42 @@ export const metaConfigs = {
 			{ weight: 0.005, start: '¡', end: '!' },
 		],
 	},
+	tr: {
+		wordMatcher: /^[\p{scx=Latn}\p{M}]+$/u,
+		wordSeparators: [{ weight: 1, separator: ' ' }],
+		sentenceWrappers: [{ weight: 1, end: '.' }],
+	},
+	th: {
+		wordMatcher: /^[\p{scx=Thai}\p{M}]+$/u,
+		wordSeparators: [{ weight: 1, separator: '' }],
+		sentenceWrappers: [{ weight: 1, end: '' }],
+		sentenceSeparator: ' ',
+	},
+	vi: {
+		wordMatcher: /^[\p{scx=Latn}\p{M}]+$/u,
+		wordSeparators: [{ weight: 1, separator: ' ' }],
+		sentenceWrappers: [{ weight: 1, end: '.' }],
+	},
+	cs: {
+		wordMatcher: /^[\p{scx=Latn}\p{M}]+$/u,
+		wordSeparators: [{ weight: 1, separator: ' ' }],
+		sentenceWrappers: [{ weight: 1, end: '.' }],
+	},
+	ru: {
+		wordMatcher: /^[\p{scx=Cyrl}\p{M}]+$/u,
+		wordSeparators: [{ weight: 1, separator: ' ' }],
+		sentenceWrappers: [{ weight: 1, end: '.' }],
+	},
+	de: {
+		wordMatcher: /^[\p{scx=Latn}\p{M}]+$/u,
+		wordSeparators: [{ weight: 1, separator: ' ' }],
+		sentenceWrappers: [{ weight: 1, end: '.' }],
+	},
+	got: {
+		wordMatcher: /^[\p{scx=Goth}\p{M}]+$/u,
+		wordSeparators: [{ weight: 1, separator: ' ' }],
+		sentenceWrappers: [{ weight: 1, end: '.' }],
+	},
 } satisfies Record<
 	Locale,
 	Omit<ConfigFromScrapedConfig, 'locale'> & Partial<Omit<ConstructorParameters<typeof BabelIpsum>[0], 'vocabulary'>>

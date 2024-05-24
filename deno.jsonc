@@ -2,7 +2,7 @@
 	"lock": false,
 	"tasks": {
 		"test": "deno test -A --watch src",
-		"test:update-snapshot": "UPDATE_SNAPSHOT=1 deno test -A --watch src",
+		"test:update-snapshot": "UPDATE_SNAPSHOT=1 deno test -A --no-check src",
 		"build": "deno run -A scripts/buildDefaultConfigs.ts",
 		"scrape": "deno run -A scripts/scrape.ts"
 	},

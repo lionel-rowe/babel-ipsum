@@ -146,7 +146,7 @@ export class BabelIpsum {
 	*words(): Generator<string, never, undefined> {
 		let prevWord = ''
 		whileLoop: while (true) {
-			// try 10 times for a unique next word
+			// try 10 times for a non-repeated next word
 			for (let i = 0; i < 10; ++i) {
 				const word = this.#weighted(this.config.vocabulary).word
 				if (word !== prevWord) {
@@ -156,7 +156,7 @@ export class BabelIpsum {
 				}
 			}
 
-			// otherwise just take the next one regardless of uniqueness
+			// otherwise just take the next one regardless of repetition
 			yield this.#weighted(this.config.vocabulary).word
 		}
 	}

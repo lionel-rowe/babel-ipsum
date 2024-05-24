@@ -2,7 +2,7 @@ import { load } from 'cheerio'
 import { AnchorMe } from 'irregex/matchers/anchorme.ts'
 
 // // TODO: add 'tr', 'th', 'vi', 'cs', 'ru', 'de'
-export const locales = ['lorem', 'en', 'es', 'zh', 'ar'] as const
+export const locales = ['lorem', 'en', 'es', 'zh', 'ar', 'tr', 'th', 'vi', 'cs', 'ru', 'de', 'got'] as const
 export type Locale = typeof locales[number]
 type ScrapeConfig = {
 	url: string | URL
@@ -28,6 +28,18 @@ const scrapeConfigs: Record<Locale, ScrapeConfig> = {
 	es: wikiConfig('es'),
 	zh: wikiConfig('zh'),
 	ar: wikiConfig('ar'),
+
+	tr: wikiConfig('tr'),
+	th: wikiConfig('th'),
+	vi: wikiConfig('vi'),
+	cs: wikiConfig('cs'),
+	ru: wikiConfig('ru'),
+	de: wikiConfig('de'),
+
+	got: {
+		...wikiConfig('got'),
+		url: 'https://got.wikipedia.org/wiki/%F0%90%8C%B2%F0%90%8C%BF%F0%90%8D%84%F0%90%8D%82%F0%90%8C%B0%F0%90%8C%B6%F0%90%8C%B3%F0%90%8C%B0',
+	},
 }
 
 if (import.meta.main) {

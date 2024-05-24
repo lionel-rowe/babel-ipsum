@@ -4,8 +4,8 @@ const config: BabelIpsumConfig = {
 	'locale': 'es',
 	'sentenceWrappers': [
 		{ 'weight': 1, 'end': '.' },
-		{ 'weight': 0.05, 'start': '¿', 'end': '?' },
-		{ 'weight': 0.05, 'start': '¡', 'end': '!' },
+		{ 'weight': 0.01, 'start': '¿', 'end': '?' },
+		{ 'weight': 0.005, 'start': '¡', 'end': '!' },
 	],
 	'vocabulary': [
 		{ 'word': 'de', 'weight': 190 },
