@@ -11,7 +11,7 @@ import vi from '@li/lorem-babel/locales/vi'
 const lorem = new LoremBabel(vi)
 const result = lorem.text()
 
-result.toString()
+console.log(result.toString())
 
 // Nguồn nằm mã quan nguồn cả ngữ sửa người utf công thì chữ nhiều. Nhật ngôn đã unicode mã những được đặt năm trong ucs duy tự ký byte như nhóm cái. Các qof iso cầu sửa nén một hóa thế là hebrew hạn đích lotus việc dùng utf tùy chữ viết.
 
