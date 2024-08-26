@@ -33,16 +33,23 @@ type LengthBoundaries = {
 	max: number
 }
 
+function getLengthBoundaries(lengthBoundaries: number | LengthBoundaries): LengthBoundaries {
+	if (typeof lengthBoundaries === 'number') {
+		return { min: lengthBoundaries, max: lengthBoundaries }
+	}
+	return lengthBoundaries
+}
+
 type GenerateOptions = {
-	wordsPerSentence: LengthBoundaries
-	sentencesPerParagraph: LengthBoundaries
-	paragraphsPerText: LengthBoundaries
+	wordsPerSentence: number | LengthBoundaries
+	sentencesPerParagraph: number | LengthBoundaries
+	paragraphsPerText: number | LengthBoundaries
 }
 
 const defaultGenerateOptions: GenerateOptions = {
-	paragraphsPerText: { min: 3, max: 5 },
-	sentencesPerParagraph: { min: 3, max: 5 },
 	wordsPerSentence: { min: 8, max: 25 },
+	sentencesPerParagraph: { min: 3, max: 5 },
+	paragraphsPerText: { min: 3, max: 5 },
 }
 
 class TextContents extends Array {
@@ -135,7 +142,7 @@ export class LoremBabel {
 	 */
 	text(options?: Partial<GenerateOptions>): TextContents {
 		const opts = { ...defaultGenerateOptions, ...options }
-		const { min, max } = opts.paragraphsPerText
+		const { min, max } = getLengthBoundaries(opts.paragraphsPerText)
 		const length = this.#randBetween(min, max)
 
 		return TextContents.fromParts(
@@ -188,7 +195,7 @@ export class LoremBabel {
 	}
 
 	#sentence(options: Pick<GenerateOptions, 'wordsPerSentence'>): string {
-		const { min, max } = options.wordsPerSentence
+		const { min, max } = getLengthBoundaries(options.wordsPerSentence)
 		const length = this.#randBetween(min, max)
 
 		const words = this.words()
@@ -210,7 +217,7 @@ export class LoremBabel {
 	}
 
 	#sentences(options: Pick<GenerateOptions, 'wordsPerSentence' | 'sentencesPerParagraph'>): string[] {
-		const { min, max } = options.sentencesPerParagraph
+		const { min, max } = getLengthBoundaries(options.sentencesPerParagraph)
 		const length = this.#randBetween(min, max)
 
 		return Array.from({ length }, () => {

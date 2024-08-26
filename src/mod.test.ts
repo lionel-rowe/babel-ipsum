@@ -72,6 +72,21 @@ Deno.test(LoremBabel.name, async (t) => {
 		)
 	})
 
+	await t.step('scalar word boundaries', () => {
+		const lorem = new LoremBabel(configs.lorem)
+		lorem.random = prng(SEED)
+		const text = lorem.text({
+			wordsPerSentence: 10,
+			paragraphsPerText: 1,
+			sentencesPerParagraph: 1,
+		})
+
+		assertEquals(
+			text.toString(),
+			'Hoc sensibus non homini, hoc ipsa, ab sed me se.',
+		)
+	})
+
 	await t.step('with preloaded config and default generate options', () => {
 		const lorem = new LoremBabel(vi)
 		lorem.random = prng(SEED)
