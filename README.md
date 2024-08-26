@@ -1,4 +1,4 @@
-# Lorem Babel
+# Lorem Babel [![JSR](https://jsr.io/badges/@li/lorem-babel)](https://jsr.io/@li/lorem-babel)
 
 Generate nonsense placeholder text in a variety of languages.
 
