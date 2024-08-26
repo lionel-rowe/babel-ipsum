@@ -1,5 +1,11 @@
 import type { LoremBabelConfig } from '../mod.ts'
 
+/**
+ * @module
+ * Config used with LoremBabel to generate nonsense placeholder text in `tr` locale.
+ */
+
+/** LoremBabel configuration for `tr` locale */
 const config: LoremBabelConfig = {
 	'locale': 'tr',
 	'wordSeparators': [

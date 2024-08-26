@@ -1,5 +1,11 @@
 import type { LoremBabelConfig } from '../mod.ts'
 
+/**
+ * @module
+ * Config used with LoremBabel to generate nonsense placeholder text in `zh` locale.
+ */
+
+/** LoremBabel configuration for `zh` locale */
 const config: LoremBabelConfig = {
 	'locale': 'zh',
 	'sentenceSeparator': '',

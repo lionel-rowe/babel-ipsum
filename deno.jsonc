@@ -1,7 +1,24 @@
 {
 	"lock": false,
+	"name": "@li/lorem-babel",
+	"version": "0.0.2",
+	"exports": {
+		".": "./src/mod.ts",
+		"./locales/lorem": "./src/configs/lorem.ts",
+		"./locales/zh": "./src/configs/zh.ts",
+		"./locales/vi": "./src/configs/vi.ts",
+		"./locales/de": "./src/configs/de.ts",
+		"./locales/tr": "./src/configs/tr.ts",
+		"./locales/ru": "./src/configs/ru.ts",
+		"./locales/es": "./src/configs/es.ts",
+		"./locales/en": "./src/configs/en.ts",
+		"./locales/cs": "./src/configs/cs.ts",
+		"./locales/got": "./src/configs/got.ts",
+		"./locales/th": "./src/configs/th.ts",
+		"./locales/ar": "./src/configs/ar.ts"
+	},
 	"tasks": {
-		"test": "deno test -A --watch src",
+		"test": "deno test -A src",
 		"test:update-snapshot": "UPDATE_SNAPSHOT=1 deno test -A --no-check src",
 		"build": "deno run -A scripts/buildDefaultConfigs.ts",
 		"scrape": "deno run -A scripts/scrape.ts"
@@ -19,20 +36,6 @@
 		"indentWidth": 4,
 		"singleQuote": true,
 		"proseWrap": "preserve",
-		"exclude": [
-			"node_modules",
-			"fresh.gen.ts",
-			"*.md",
-			"vendor",
-			"UnicodeData.json",
-			"UnicodeData.txt",
-			"**/_gen.ts",
-			"**/*.gen.js",
-			"**/*.gen.ts",
-			"_fixtures",
-			"static/qa",
-			"**/*.min.*",
-			"core/qa/clearlylocal.pythonanywhere.com"
-		]
+		"exclude": []
 	}
 }

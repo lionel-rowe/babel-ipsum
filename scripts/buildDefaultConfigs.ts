@@ -126,6 +126,12 @@ await Promise.all(
 			filePath,
 			`import type { LoremBabelConfig } from '../mod.ts'
 
+/**
+ * @module
+ * Config used with LoremBabel to generate nonsense placeholder text in \`${locale}\` locale.
+ */
+
+/** LoremBabel configuration for \`${locale}\` locale */
 const config: LoremBabelConfig = ${
 				JSON.stringify(config, (k, v) => ['wordMatcher', 'content'].includes(k) ? undefined : v, '\t')
 					.replaceAll(/\n\t{3}/gm, ' ')

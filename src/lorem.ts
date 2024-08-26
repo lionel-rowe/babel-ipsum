@@ -8,6 +8,9 @@ type LoremBabelConfigFull = {
 
 type RequiredConfigOptions = 'locale' | 'vocabulary'
 
+/**
+ * Configuration for a `LoremBabel` instance.
+ */
 export type LoremBabelConfig = Partial<LoremBabelConfigFull> & Pick<LoremBabelConfigFull, RequiredConfigOptions>
 
 const defaults: Omit<LoremBabelConfigFull, RequiredConfigOptions> = {
@@ -36,9 +39,13 @@ type GenerateOptions = {
 	paragraphsPerText: LengthBoundaries
 }
 
-class TextContents extends (Array as {
-	new (...args: string[][]): Pick<Array<string[]>, number | typeof Symbol.iterator>
-}) {
+const defaultGenerateOptions: GenerateOptions = {
+	paragraphsPerText: { min: 3, max: 5 },
+	sentencesPerParagraph: { min: 3, max: 5 },
+	wordsPerSentence: { min: 8, max: 25 },
+}
+
+class TextContents extends Array {
 	#sentenceSeparator: string = ' '
 
 	static fromParts(textParts: string[][], sentenceSeparator: string): TextContents {
@@ -48,6 +55,7 @@ class TextContents extends (Array as {
 	}
 
 	private constructor(...textParts: string[][]) {
+		// @ts-ignore Argument of type 'string[]' is not assignable to parameter of type 'number'.
 		super(...textParts)
 	}
 
@@ -75,11 +83,19 @@ function assertNonEmpty<T>(array: readonly T[], msg?: string): asserts array is 
 	}
 }
 
+/**
+ * Generate paragraphs, sentences, and individual words of text in a variety of languages.
+ */
 export class LoremBabel {
 	readonly config: LoremBabelConfigFull
 	random = Math.random
 	genericWordSeparator: string
 
+	/**
+	 * Create a new `LoremBabel` instance.
+	 *
+	 * @param config - configuration for the `LoremBabel` instance
+	 */
 	constructor(config: LoremBabelConfig) {
 		this.config = { ...defaults, ...config }
 
@@ -117,13 +133,14 @@ export class LoremBabel {
 	 * // "Euismod hac gravida nulla mattis mi habitasse! Taciti sem vel felis nunc est.\n\nNulla, sed mollis netus facilisi varius cum natoque sapien laoreet. Turpis inceptos, vehicula rhoncus, integer litora luctus. Feugiat eget, sapien erat in sed phasellus, curabitur!\n\nHabitasse auctor vulputate dolor donec lacus tempus consectetur. Blandit taciti neque primis nulla sociis. Quis mi venenatis senectus habitasse varius."
 	 * ```
 	 */
-	text(options: GenerateOptions): TextContents {
-		const { min, max } = options.paragraphsPerText
+	text(options?: Partial<GenerateOptions>): TextContents {
+		const opts = { ...defaultGenerateOptions, ...options }
+		const { min, max } = opts.paragraphsPerText
 		const length = this.#randBetween(min, max)
 
 		return TextContents.fromParts(
 			Array.from({ length }, () => {
-				return this.#sentences(options)
+				return this.#sentences(opts)
 			}),
 			this.config.sentenceSeparator,
 		)

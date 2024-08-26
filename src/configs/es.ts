@@ -1,5 +1,11 @@
 import type { LoremBabelConfig } from '../mod.ts'
 
+/**
+ * @module
+ * Config used with LoremBabel to generate nonsense placeholder text in `es` locale.
+ */
+
+/** LoremBabel configuration for `es` locale */
 const config: LoremBabelConfig = {
 	'locale': 'es',
 	'sentenceWrappers': [

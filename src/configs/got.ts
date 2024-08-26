@@ -1,5 +1,11 @@
 import type { LoremBabelConfig } from '../mod.ts'
 
+/**
+ * @module
+ * Config used with LoremBabel to generate nonsense placeholder text in `got` locale.
+ */
+
+/** LoremBabel configuration for `got` locale */
 const config: LoremBabelConfig = {
 	'locale': 'got',
 	'wordSeparators': [
