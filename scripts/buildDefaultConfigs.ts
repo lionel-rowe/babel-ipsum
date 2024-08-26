@@ -1,6 +1,6 @@
 import { Irregex } from 'https://raw.githubusercontent.com/lionel-rowe/irregex/ea91b391ba95d270e97fd74a087fb5efe3dee8bd/irregex.ts'
 import { createConfig } from '../src/config.ts'
-import type { BabelIpsum, BabelIpsumConfig } from '../src/mod.ts'
+import type { LoremBabel, LoremBabelConfig } from '../src/mod.ts'
 import type { Locale } from './scrape.ts'
 import scraped from './scraped/all.json' with { type: 'json' }
 
@@ -8,7 +8,7 @@ type ConfigFromScrapedConfig = { maxVocabSize?: number; wordMatcher?: Pick<RegEx
 
 function configFromScraped(
 	metaConfig: ConfigFromScrapedConfig,
-): BabelIpsumConfig {
+): LoremBabelConfig {
 	const { locale } = metaConfig
 
 	return {
@@ -112,7 +112,7 @@ export const metaConfigs = {
 	},
 } satisfies Record<
 	Locale,
-	Omit<ConfigFromScrapedConfig, 'locale'> & Partial<Omit<ConstructorParameters<typeof BabelIpsum>[0], 'vocabulary'>>
+	Omit<ConfigFromScrapedConfig, 'locale'> & Partial<Omit<ConstructorParameters<typeof LoremBabel>[0], 'vocabulary'>>
 >
 
 await Promise.all(
@@ -124,9 +124,9 @@ await Promise.all(
 
 		await Deno.writeTextFile(
 			filePath,
-			`import type { BabelIpsumConfig } from '../mod.ts'
+			`import type { LoremBabelConfig } from '../mod.ts'
 
-const config: BabelIpsumConfig = ${
+const config: LoremBabelConfig = ${
 				JSON.stringify(config, (k, v) => ['wordMatcher', 'content'].includes(k) ? undefined : v, '\t')
 					.replaceAll(/\n\t{3}/gm, ' ')
 					.replaceAll(/\n\t{2}}/gm, ' }')

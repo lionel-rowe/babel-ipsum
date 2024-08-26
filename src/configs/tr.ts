@@ -1,6 +1,6 @@
-import type { BabelIpsumConfig } from '../mod.ts'
+import type { LoremBabelConfig } from '../mod.ts'
 
-const config: BabelIpsumConfig = {
+const config: LoremBabelConfig = {
 	'locale': 'tr',
 	'wordSeparators': [
 		{ 'weight': 1, 'separator': ' ' },

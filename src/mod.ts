@@ -1,1 +1,1 @@
-export * from './ipsum.ts'
+export * from './lorem.ts'

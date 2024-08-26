@@ -1,4 +1,4 @@
-import type { BabelIpsumConfig } from './mod.ts'
+import type { LoremBabelConfig } from './mod.ts'
 
 // defaults
 const MAX_VOCAB_SIZE = 800
@@ -33,7 +33,7 @@ export function createConfig(
 		maxVocabSize?: number
 		wordMatcher?: Pick<RegExp, 'test'>
 	},
-): BabelIpsumConfig {
+): LoremBabelConfig {
 	const { content, locale, wordMatcher, maxVocabSize } = metaConfig
 
 	const vocabulary = contentToVocabulary({

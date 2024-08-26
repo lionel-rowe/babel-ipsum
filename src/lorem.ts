@@ -1,4 +1,4 @@
-type BabelIpsumConfigFull = {
+type LoremBabelConfigFull = {
 	locale: string | Intl.Locale
 	vocabulary: readonly { weight: number; word: string }[]
 	sentenceSeparator: string
@@ -8,9 +8,9 @@ type BabelIpsumConfigFull = {
 
 type RequiredConfigOptions = 'locale' | 'vocabulary'
 
-export type BabelIpsumConfig = Partial<BabelIpsumConfigFull> & Pick<BabelIpsumConfigFull, RequiredConfigOptions>
+export type LoremBabelConfig = Partial<LoremBabelConfigFull> & Pick<LoremBabelConfigFull, RequiredConfigOptions>
 
-const defaults: Omit<BabelIpsumConfigFull, RequiredConfigOptions> = {
+const defaults: Omit<LoremBabelConfigFull, RequiredConfigOptions> = {
 	sentenceSeparator: ' ',
 	wordSeparators: [
 		{ weight: 1, separator: ' ' },
@@ -75,12 +75,12 @@ function assertNonEmpty<T>(array: readonly T[], msg?: string): asserts array is 
 	}
 }
 
-export class BabelIpsum {
-	readonly config: BabelIpsumConfigFull
+export class LoremBabel {
+	readonly config: LoremBabelConfigFull
 	random = Math.random
 	genericWordSeparator: string
 
-	constructor(config: BabelIpsumConfig) {
+	constructor(config: LoremBabelConfig) {
 		this.config = { ...defaults, ...config }
 
 		this.genericWordSeparator = [...this.config.wordSeparators].sort((a, b) => b.weight - a.weight)[0].separator
@@ -102,11 +102,11 @@ export class BabelIpsum {
 	 * @example
 	 *
 	 * ```ts
-	 * import { BabelIpsum } from 'babel-ipsum/mod.ts'
-	 * import config from 'babel-ipsum/configs/lorem.ts'
+	 * import { LoremBabel } from 'lorem-babel/mod.ts'
+	 * import config from 'lorem-babel/configs/lorem.ts'
 	 *
-	 * const ipsum = new BabelIpsum(config)
-	 * const text = ipsum.text({
+	 * const lorem = new LoremBabel(config)
+	 * const text = lorem.text({
 	 * 	wordsPerSentence: { min: 5, max: 10 },
 	 * 	sentencesPerParagraph: { min: 2, max: 3 },
 	 * 	paragraphsPerText: { min: 3, max: 3 },
@@ -135,11 +135,11 @@ export class BabelIpsum {
 	 *
 	 * @example
 	 * ```ts
-	 * import { BabelIpsum } from 'babel-ipsum/mod.ts'
-	 * import config from 'babel-ipsum/configs/lorem.ts'
+	 * import { LoremBabel } from 'lorem-babel/mod.ts'
+	 * import config from 'lorem-babel/configs/lorem.ts'
 	 *
-	 * const ipsum = new BabelIpsum(config)
-	 * ipsum.words().take(5).toArray()
+	 * const lorem = new LoremBabel(config)
+	 * lorem.words().take(5).toArray()
 	 * // example output: [ "ultrices", "suscipit", "donec", "proin", "est" ]
 	 * ```
 	 */

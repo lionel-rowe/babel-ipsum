@@ -1,4 +1,4 @@
-import { BabelIpsum, type BabelIpsumConfig } from './mod.ts'
+import { LoremBabel, type LoremBabelConfig } from './mod.ts'
 import { assertEquals, assertThrows } from '@std/assert'
 import snapshot from './fixtures/snapshot.json' with { type: 'json' }
 import { type Locale, locales } from '../scripts/scrape.ts'
@@ -11,7 +11,7 @@ const configs = Object.fromEntries(
 			(await import(`./configs/${locale}.ts`)).default,
 		] as const
 	})),
-) as Record<Locale | 'lorem', BabelIpsumConfig>
+) as Record<Locale | 'lorem', LoremBabelConfig>
 
 // prng to ensure deterministic results during testing
 function prng(seed: number) {
@@ -33,10 +33,10 @@ const SEED = 4227182319
 
 const UPDATE_SNAPSHOT = Boolean(Deno.env.get('UPDATE_SNAPSHOT'))
 
-Deno.test(BabelIpsum.name, async (t) => {
+Deno.test(LoremBabel.name, async (t) => {
 	await t.step('throws if vocabulary is empty', () => {
 		assertThrows(() =>
-			new BabelIpsum({
+			new LoremBabel({
 				locale: 'en',
 				vocabulary: [],
 			})
@@ -44,20 +44,20 @@ Deno.test(BabelIpsum.name, async (t) => {
 	})
 
 	await t.step('allows single-word vocabulary', () => {
-		const ipsum = new BabelIpsum({
+		const lorem = new LoremBabel({
 			locale: 'en',
 			vocabulary: [{ word: 'word', weight: 1 }],
 		})
-		ipsum.random = prng(SEED)
+		lorem.random = prng(SEED)
 		// @ts-expect-error https://github.com/tc39/proposal-iterator-helpers types not in TypeScript yet
-		const words: string[] = ipsum.words().take(5).toArray()
+		const words: string[] = lorem.words().take(5).toArray()
 		assertEquals(words, ['word', 'word', 'word', 'word', 'word'])
 	})
 
 	await t.step('allows overriding the first sentence', () => {
-		const ipsum = new BabelIpsum(configs.lorem)
-		ipsum.random = prng(SEED)
-		const text = ipsum.text({
+		const lorem = new LoremBabel(configs.lorem)
+		lorem.random = prng(SEED)
+		const text = lorem.text({
 			paragraphsPerText: { min: 1, max: 1 },
 			sentencesPerParagraph: { min: 3, max: 3 },
 			wordsPerSentence: { min: 8, max: 25 },
@@ -82,8 +82,8 @@ Deno.test(BabelIpsum.name, async (t) => {
 			await t.step(key, () => {
 				const locale = key as keyof typeof configs
 				const config = configs[locale]
-				const ipsum = new BabelIpsum(config)
-				ipsum.random = prng(SEED)
+				const lorem = new LoremBabel(config)
+				lorem.random = prng(SEED)
 
 				const options = {
 					paragraphsPerText: { min: 3, max: 5 },
@@ -91,7 +91,7 @@ Deno.test(BabelIpsum.name, async (t) => {
 					wordsPerSentence: { min: 8, max: 25 },
 				}
 
-				const text = ipsum.text(options)
+				const text = lorem.text(options)
 				const sentences = [...text.sentences()]
 				assertEquals([...text].flat(), sentences)
 

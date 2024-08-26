@@ -1,6 +1,6 @@
-import type { BabelIpsumConfig } from '../mod.ts'
+import type { LoremBabelConfig } from '../mod.ts'
 
-const config: BabelIpsumConfig = {
+const config: LoremBabelConfig = {
 	'locale': 'xx',
 	'vocabulary': [
 		{ 'word': 'et', 'weight': 229 },
