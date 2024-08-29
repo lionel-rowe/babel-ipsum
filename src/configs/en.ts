@@ -18,7 +18,6 @@ const config: LoremBabelConfig = {
 		{ 'weight': 10, 'separator': ': ' },
 		{ 'weight': 9, 'separator': '–' },
 		{ 'weight': 2, 'separator': '% ' },
-		{ 'weight': 1, 'separator': ' ¥ ' },
 	],
 	'sentenceWrappers': [
 		{ 'weight': 258, 'start': '', 'end': '.' },
@@ -173,7 +172,6 @@ const config: LoremBabelConfig = {
 		{ 'word': 'do', 'weight': 7 },
 		{ 'word': 'where', 'weight': 7 },
 		{ 'word': 'glyph', 'weight': 7 },
-		{ 'word': 'windows', 'weight': 7 },
 		{ 'word': 'internal', 'weight': 7 },
 		{ 'word': 'japanese', 'weight': 7 },
 		{ 'word': 'designed', 'weight': 6 },
@@ -826,6 +824,7 @@ const config: LoremBabelConfig = {
 		{ 'word': 'interpreted', 'weight': 1 },
 		{ 'word': 'garbage', 'weight': 1 },
 		{ 'word': 'interoperation', 'weight': 1 },
+		{ 'word': 'handful', 'weight': 1 },
 	],
 }
 

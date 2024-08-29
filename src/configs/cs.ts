@@ -75,7 +75,6 @@ const config: LoremBabelConfig = {
 		{ 'word': 'proto', 'weight': 5 },
 		{ 'word': 'však', 'weight': 5 },
 		{ 'word': 'zpracování', 'weight': 5 },
-		{ 'word': 'windows', 'weight': 5 },
 		{ 'word': 'byla', 'weight': 5 },
 		{ 'word': 'kompatibilní', 'weight': 5 },
 		{ 'word': 'kód', 'weight': 5 },
@@ -820,6 +819,7 @@ const config: LoremBabelConfig = {
 		{ 'word': 'zahájen', 'weight': 1 },
 		{ 'word': 'vyřazeno', 'weight': 1 },
 		{ 'word': 'konstantní', 'weight': 1 },
+		{ 'word': 'snadné', 'weight': 1 },
 	],
 }
 

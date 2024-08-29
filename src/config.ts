@@ -3,22 +3,40 @@ import type { LoremBabelConfig } from './mod.ts'
 // defaults
 const MAX_VOCAB_SIZE = 800
 const WORD_MATCHER = /^[\p{L}\p{M}\p{N}]+$/u
-const EXCLUDE_PUNCT = /[•"'()\[\]\{\}\/／+]/
+const EXCLUDE_PUNCT = /[•"'()\[\]\{\}\/／+&]/
 
 type ContentToVocabularyParams = {
 	content: string
 	locale: string | Intl.Locale
 	wordMatcher?: Pick<RegExp, 'test'>
 	maxVocabSize: number
+	semanticCapitalization?: boolean
 }
 
-function contentToVocabulary({ content, locale, wordMatcher, maxVocabSize }: ContentToVocabularyParams) {
+function contentToVocabulary(
+	{ content, locale, wordMatcher, maxVocabSize, semanticCapitalization }: ContentToVocabularyParams,
+) {
 	const wordFreqs = new Map<string, number>()
 
-	for (const s of new Intl.Segmenter(locale, { granularity: 'word' }).segment(content.normalize())) {
-		if (s.isWordLike && (wordMatcher ?? WORD_MATCHER).test(s.segment)) {
-			const normalized = s.segment.toLocaleLowerCase(locale)
-			wordFreqs.set(normalized, (wordFreqs.get(normalized) ?? 0) + 1)
+	const sent = new Intl.Segmenter(locale, { granularity: 'sentence' })
+	const word = new Intl.Segmenter(locale, { granularity: 'word' })
+
+	for (const x of sent.segment(content.normalize())) {
+		let isFirstWord = true
+
+		for (const s of word.segment(x.segment)) {
+			if (s.isWordLike && (wordMatcher ?? WORD_MATCHER).test(s.segment)) {
+				// We always normalize case for the first word, as its capitalization isn't necessarily due to being
+				// a noun, even in German.
+				const shouldNormalizeCase = semanticCapitalization ? isFirstWord : true
+
+				const normalized = shouldNormalizeCase ? s.segment.toLocaleLowerCase(locale) : s.segment
+				wordFreqs.set(normalized, (wordFreqs.get(normalized) ?? 0) + 1)
+			}
+
+			if (s.isWordLike) {
+				isFirstWord = false
+			}
 		}
 	}
 
@@ -33,18 +51,28 @@ export function createConfig(
 		content: string
 		maxVocabSize?: number
 		wordMatcher?: Pick<RegExp, 'test'>
+		/**
+		 * Whether the locale attaches grammatical significance to case (i.e. German, which capitalizes nouns).
+		 */
+		semanticCapitalization?: boolean
 	},
 ): LoremBabelConfig {
-	const { content, locale, wordMatcher, maxVocabSize } = metaConfig
+	const { content, locale, wordMatcher, maxVocabSize, semanticCapitalization } = metaConfig
 
 	// we assume `content` is formatted in `\n\n`-separated paragraphs with no additional intra-paragraph whitespace other
 	// than single spaces (per the scraping logic)
+
+	if (semanticCapitalization) {
+		// wordMatcher = new RegExp(String.raw`^[\p{scx=${locale}}\p{M}]+$`, 'v')
+		console.log(locale)
+	}
 
 	const vocabulary = contentToVocabulary({
 		content,
 		locale,
 		wordMatcher,
 		maxVocabSize: maxVocabSize ?? MAX_VOCAB_SIZE,
+		semanticCapitalization,
 	})
 
 	const wordSegmenter = new Intl.Segmenter(locale, { granularity: 'word' })

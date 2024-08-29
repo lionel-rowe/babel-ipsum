@@ -328,7 +328,6 @@ const config: LoremBabelConfig = {
 		{ 'word': 'từng', 'weight': 1 },
 		{ 'word': 'bước', 'weight': 1 },
 		{ 'word': 'truyền', 'weight': 1 },
-		{ 'word': 'windows', 'weight': 1 },
 		{ 'word': 'tháng', 'weight': 1 },
 		{ 'word': 'hiệp', 'weight': 1 },
 		{ 'word': 'hội', 'weight': 1 },

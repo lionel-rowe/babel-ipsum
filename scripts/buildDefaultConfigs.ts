@@ -4,7 +4,12 @@ import type { LoremBabelConfig } from '../src/mod.ts'
 import type { Locale } from './scrape.ts'
 import scraped from './scraped/all.json' with { type: 'json' }
 
-type ConfigFromScrapedConfig = { maxVocabSize?: number; wordMatcher?: Pick<RegExp, 'test'>; locale: Locale }
+type ConfigFromScrapedConfig = {
+	maxVocabSize?: number
+	wordMatcher?: Pick<RegExp, 'test'>
+	locale: Locale
+	semanticCapitalization?: boolean
+}
 
 function configFromScraped(
 	metaConfig: ConfigFromScrapedConfig,
@@ -27,8 +32,8 @@ class PartiallyLowerCaseWordMatcher extends Irregex {
 		scriptId: string
 		locale: Locale
 		minLength: number
-		minLengthExceptions: string[]
-		exclude: string[]
+		minLengthExceptions: readonly string[]
+		exclude: readonly string[]
 	}
 
 	constructor(
@@ -63,6 +68,8 @@ class PartiallyLowerCaseWordMatcher extends Irregex {
 	}
 }
 
+const DEFAULT_EXCLUDES = ['Unicode', 'Windows'] as const
+
 export const metaConfigs = {
 	ar: {
 		wordMatcher: /^[\p{scx=Arab}\p{M}]+$/u,
@@ -73,16 +80,17 @@ export const metaConfigs = {
 			scriptId: 'Latn',
 			minLength: 2,
 			minLengthExceptions: [],
-			exclude: ['Unicode'],
+			exclude: DEFAULT_EXCLUDES,
 		}),
 	},
 	de: {
+		semanticCapitalization: true,
 		wordMatcher: new PartiallyLowerCaseWordMatcher({
 			locale: 'de',
 			scriptId: 'Latn',
 			minLength: 2,
 			minLengthExceptions: [],
-			exclude: ['Unicode'],
+			exclude: DEFAULT_EXCLUDES,
 		}),
 	},
 	el: {
@@ -91,7 +99,7 @@ export const metaConfigs = {
 			scriptId: 'Greek',
 			minLength: 2,
 			minLengthExceptions: [],
-			exclude: ['Unicode'],
+			exclude: DEFAULT_EXCLUDES,
 		}),
 	},
 	en: {
@@ -100,7 +108,7 @@ export const metaConfigs = {
 			scriptId: 'Latn',
 			minLength: 2,
 			minLengthExceptions: ['a'],
-			exclude: ['Unicode'],
+			exclude: DEFAULT_EXCLUDES,
 		}),
 	},
 	es: {
@@ -109,7 +117,7 @@ export const metaConfigs = {
 			scriptId: 'Latn',
 			minLength: 2,
 			minLengthExceptions: ['y', 'a', 'o', 'u', 'e'],
-			exclude: ['Unicode'],
+			exclude: DEFAULT_EXCLUDES,
 		}),
 	},
 	got: {
@@ -125,7 +133,7 @@ export const metaConfigs = {
 			scriptId: 'Cyrl',
 			minLength: 2,
 			minLengthExceptions: ['в', 'с', 'у'],
-			exclude: ['Unicode'],
+			exclude: DEFAULT_EXCLUDES,
 		}),
 	},
 	th: {
@@ -135,14 +143,14 @@ export const metaConfigs = {
 		wordMatcher: new PartiallyLowerCaseWordMatcher({
 			locale: 'tr',
 			scriptId: 'Latn',
-			exclude: ['Unicode'],
+			exclude: DEFAULT_EXCLUDES,
 		}),
 	},
 	vi: {
 		wordMatcher: new PartiallyLowerCaseWordMatcher({
 			locale: 'vi',
 			scriptId: 'Latn',
-			exclude: ['Unicode'],
+			exclude: DEFAULT_EXCLUDES,
 		}),
 	},
 	zh: {
@@ -152,6 +160,10 @@ export const metaConfigs = {
 	Locale,
 	{
 		wordMatcher?: Matcher
+		/**
+		 * Whether the locale attaches grammatical significance to case (i.e. German, which capitalizes nouns).
+		 */
+		semanticCapitalization?: boolean
 	}
 >
 

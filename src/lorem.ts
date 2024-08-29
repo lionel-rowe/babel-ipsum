@@ -4,6 +4,7 @@ type LoremBabelConfigFull = {
 	sentenceSeparator: string
 	wordSeparators: readonly { weight: number; separator: string }[]
 	sentenceWrappers: readonly { weight: number; start?: string; end: string }[]
+	semanticCapitalization?: boolean
 }
 
 type RequiredConfigOptions = 'locale' | 'vocabulary'
