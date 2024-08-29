@@ -28,7 +28,6 @@ const config: LoremBabelConfig = {
 		{ 'word': 'la', 'weight': 54 },
 		{ 'word': 'caracteres', 'weight': 45 },
 		{ 'word': 'que', 'weight': 45 },
-		{ 'word': 'unicode', 'weight': 40 },
 		{ 'word': 'como', 'weight': 31 },
 		{ 'word': 'un', 'weight': 27 },
 		{ 'word': 'con', 'weight': 26 },

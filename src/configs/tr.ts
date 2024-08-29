@@ -25,7 +25,6 @@ const config: LoremBabelConfig = {
 	'vocabulary': [
 		{ 'word': 'kod', 'weight': 86 },
 		{ 'word': 've', 'weight': 65 },
-		{ 'word': 'unicode', 'weight': 51 },
 		{ 'word': 'bir', 'weight': 50 },
 		{ 'word': 'bu', 'weight': 36 },
 		{ 'word': 'karakter', 'weight': 34 },
@@ -823,6 +822,7 @@ const config: LoremBabelConfig = {
 		{ 'word': 'kullanılabileceği', 'weight': 1 },
 		{ 'word': 'belirtilen', 'weight': 1 },
 		{ 'word': 'temsilen', 'weight': 1 },
+		{ 'word': 'kullanılacakları', 'weight': 1 },
 	],
 }
 

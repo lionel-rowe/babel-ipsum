@@ -24,7 +24,6 @@ const config: LoremBabelConfig = {
 		{ 'word': 'ký', 'weight': 49 },
 		{ 'word': 'được', 'weight': 47 },
 		{ 'word': 'là', 'weight': 42 },
-		{ 'word': 'unicode', 'weight': 39 },
 		{ 'word': 'tự', 'weight': 39 },
 		{ 'word': 'có', 'weight': 39 },
 		{ 'word': 'một', 'weight': 39 },

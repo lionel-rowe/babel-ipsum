@@ -23,15 +23,28 @@ function configFromScraped(
 
 class PartiallyLowerCaseWordMatcher extends Irregex {
 	regex: RegExp
+	config: {
+		scriptId: string
+		locale: Locale
+		minLength: number
+		minLengthExceptions: string[]
+		exclude: string[]
+	}
 
 	constructor(
-		scriptId: string,
-		public locale: Locale,
-		private minLength = 1,
-		private minLengthExceptions: string[] = [],
+		config:
+			& Partial<PartiallyLowerCaseWordMatcher['config']>
+			& Pick<PartiallyLowerCaseWordMatcher['config'], 'scriptId' | 'locale'>,
 	) {
 		super()
-		this.regex = new RegExp(String.raw`^[\p{scx=${scriptId}}\p{M}]+$`, 'v')
+		this.config = {
+			minLength: 1,
+			minLengthExceptions: [],
+			...config,
+			exclude: config.exclude?.map((x) => x.toLocaleLowerCase(config.locale)) ?? [],
+		}
+
+		this.regex = new RegExp(String.raw`^[\p{scx=${config.scriptId}}\p{M}]+$`, 'v')
 		this.trackLastIndex = [this.regex]
 	}
 
@@ -39,9 +52,12 @@ class PartiallyLowerCaseWordMatcher extends Irregex {
 		const result = this.regex.exec(str)
 		if (!result) return null
 
+		const { locale, minLength, minLengthExceptions, exclude } = this.config
+
 		const [m] = result
-		if (m.toLocaleUpperCase(this.locale) === m) return null
-		if (m.length < this.minLength && !this.minLengthExceptions.includes(m)) return null
+		if (m.toLocaleUpperCase(locale) === m) return null
+		if (m.length < minLength && !minLengthExceptions.includes(m)) return null
+		if (exclude.includes(m.toLocaleLowerCase(locale))) return null
 
 		return result
 	}
@@ -52,19 +68,49 @@ export const metaConfigs = {
 		wordMatcher: /^[\p{scx=Arab}\p{M}]+$/u,
 	},
 	cs: {
-		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'cs'),
+		wordMatcher: new PartiallyLowerCaseWordMatcher({
+			locale: 'cs',
+			scriptId: 'Latn',
+			minLength: 2,
+			minLengthExceptions: [],
+			exclude: ['Unicode'],
+		}),
 	},
 	de: {
-		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'de', 2),
+		wordMatcher: new PartiallyLowerCaseWordMatcher({
+			locale: 'de',
+			scriptId: 'Latn',
+			minLength: 2,
+			minLengthExceptions: [],
+			exclude: ['Unicode'],
+		}),
 	},
 	el: {
-		wordMatcher: new PartiallyLowerCaseWordMatcher('Greek', 'el', 2),
+		wordMatcher: new PartiallyLowerCaseWordMatcher({
+			locale: 'el',
+			scriptId: 'Greek',
+			minLength: 2,
+			minLengthExceptions: [],
+			exclude: ['Unicode'],
+		}),
 	},
 	en: {
-		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'en', 2, ['a']),
+		wordMatcher: new PartiallyLowerCaseWordMatcher({
+			locale: 'en',
+			scriptId: 'Latn',
+			minLength: 2,
+			minLengthExceptions: ['a'],
+			exclude: ['Unicode'],
+		}),
 	},
 	es: {
-		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'es', 2, ['y', 'a', 'o', 'u', 'e']),
+		wordMatcher: new PartiallyLowerCaseWordMatcher({
+			locale: 'es',
+			scriptId: 'Latn',
+			minLength: 2,
+			minLengthExceptions: ['y', 'a', 'o', 'u', 'e'],
+			exclude: ['Unicode'],
+		}),
 	},
 	got: {
 		wordMatcher: /^[\p{scx=Goth}\p{M}]+$/u,
@@ -74,16 +120,30 @@ export const metaConfigs = {
 	},
 	lorem: {},
 	ru: {
-		wordMatcher: new PartiallyLowerCaseWordMatcher('Cyrl', 'ru', 2, ['в', 'с', 'у']),
+		wordMatcher: new PartiallyLowerCaseWordMatcher({
+			locale: 'ru',
+			scriptId: 'Cyrl',
+			minLength: 2,
+			minLengthExceptions: ['в', 'с', 'у'],
+			exclude: ['Unicode'],
+		}),
 	},
 	th: {
 		wordMatcher: /^[\p{scx=Thai}\p{M}]+$/u,
 	},
 	tr: {
-		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'tr'),
+		wordMatcher: new PartiallyLowerCaseWordMatcher({
+			locale: 'tr',
+			scriptId: 'Latn',
+			exclude: ['Unicode'],
+		}),
 	},
 	vi: {
-		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'vi'),
+		wordMatcher: new PartiallyLowerCaseWordMatcher({
+			locale: 'vi',
+			scriptId: 'Latn',
+			exclude: ['Unicode'],
+		}),
 	},
 	zh: {
 		wordMatcher: /^\p{scx=Han}+$/u,

@@ -3,6 +3,7 @@ import type { LoremBabelConfig } from './mod.ts'
 // defaults
 const MAX_VOCAB_SIZE = 800
 const WORD_MATCHER = /^[\p{L}\p{M}\p{N}]+$/u
+const EXCLUDE_PUNCT = /[•"'()\[\]\{\}\/／+]/
 
 type ContentToVocabularyParams = {
 	content: string
@@ -96,7 +97,7 @@ export function createConfig(
 
 			if (
 				!/[\p{P}\s]/u.test(wordSegment.segment) ||
-				/[•"'()\[\]\{\}\/／+]/.test(wordSegment.segment) ||
+				EXCLUDE_PUNCT.test(wordSegment.segment) ||
 				/[\p{Ps}\p{Pe}\p{Pi}\p{Pf}]/u.test(wordSegment.segment) ||
 				/\p{P}{2}/u.test(wordSegment.segment)
 			) {
@@ -134,7 +135,7 @@ export function createConfig(
 
 			return [start, end].join(JOINER)
 		})
-		.filter((x) => !/\n/.test(x) && !/['"]/.test(x))
+		.filter((x) => !/\n/.test(x) && !EXCLUDE_PUNCT.test(x))
 
 	// we join sentences with sentence separator, so we can trim these here
 	_wrappers = _wrappers.map((x) => x.trim())

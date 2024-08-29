@@ -21,14 +21,12 @@ const config: LoremBabelConfig = {
 	'sentenceWrappers': [
 		{ 'weight': 171, 'start': '', 'end': '.' },
 		{ 'weight': 30, 'start': '', 'end': '' },
-		{ 'weight': 8, 'start': '•', 'end': '.' },
 	],
 	'vocabulary': [
 		{ 'word': 'die', 'weight': 122 },
 		{ 'word': 'zeichen', 'weight': 89 },
 		{ 'word': 'der', 'weight': 82 },
 		{ 'word': 'und', 'weight': 82 },
-		{ 'word': 'unicode', 'weight': 81 },
 		{ 'word': 'erw', 'weight': 78 },
 		{ 'word': 'in', 'weight': 74 },
 		{ 'word': 'für', 'weight': 53 },
@@ -824,6 +822,7 @@ const config: LoremBabelConfig = {
 		{ 'word': 'allen', 'weight': 1 },
 		{ 'word': 'zeitungen', 'weight': 1 },
 		{ 'word': 'zeitschriften', 'weight': 1 },
+		{ 'word': 'welt', 'weight': 1 },
 	],
 }
 

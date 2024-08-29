@@ -30,7 +30,6 @@ const config: LoremBabelConfig = {
 		{ 'word': 'of', 'weight': 258 },
 		{ 'word': 'and', 'weight': 207 },
 		{ 'word': 'in', 'weight': 195 },
-		{ 'word': 'unicode', 'weight': 178 },
 		{ 'word': 'to', 'weight': 171 },
 		{ 'word': 'a', 'weight': 158 },
 		{ 'word': 'as', 'weight': 118 },
@@ -826,6 +825,7 @@ const config: LoremBabelConfig = {
 		{ 'word': 'unworkable', 'weight': 1 },
 		{ 'word': 'interpreted', 'weight': 1 },
 		{ 'word': 'garbage', 'weight': 1 },
+		{ 'word': 'interoperation', 'weight': 1 },
 	],
 }
 
