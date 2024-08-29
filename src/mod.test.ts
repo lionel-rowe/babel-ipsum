@@ -107,14 +107,14 @@ Deno.test(LoremBabel.name, async (t) => {
 		},
 	)
 
-	type Result = { text: string[][]; joined: string }
-	type Tests = Record<keyof typeof configs, Result>
-	const blankTest: Result = { text: [], joined: '' }
-	const blankTests = Object.fromEntries(Object.keys(configs).map((k) => [k, { ...blankTest }])) as Tests
-	const tests: Tests = Deno.env.get('UPDATE_SNAPSHOT') ? blankTests : snapshot as Tests
+	type Result = { paragraphs: string[] }
+	type Snapshots = Record<keyof typeof configs, Result>
+	const blankTest: Result = { paragraphs: [] }
+	const blankTests = Object.fromEntries(Object.keys(configs).map((k) => [k, { ...blankTest }])) as Snapshots
+	const snapshots: Snapshots = Deno.env.get('UPDATE_SNAPSHOT') ? blankTests : snapshot as Snapshots
 
 	await t.step('snapshots', async (t) => {
-		for (const [key, test] of Object.entries(tests)) {
+		for (const [key, snapshot] of Object.entries(snapshots)) {
 			await t.step(key, () => {
 				const locale = key as keyof typeof configs
 				const config = configs[locale]
@@ -127,33 +127,29 @@ Deno.test(LoremBabel.name, async (t) => {
 					wordsPerSentence: { min: 8, max: 25 },
 				}
 
-				const text = lorem.text(options)
-				const sentences = [...text.sentences()]
-				assertEquals([...text].flat(), sentences)
+				const actual = lorem.text(options)
+				const sentences = [...actual.sentences()]
+				assertEquals([...actual].flat(), sentences)
 
-				const paragraphs = [...text.paragraphs()]
 				const stringified = new Set([
-					text.toString(),
-					String(text),
-					`${text}`,
-					'' + text + '',
-					paragraphs.join('\n\n'),
+					actual.toString(),
+					String(actual),
+					`${actual}`,
+					'' + actual + '',
+					[...actual.paragraphs()].join('\n\n'),
 				])
 				assertEquals(stringified.size, 1, 'All ways of stringifying ParagraphContents give same result')
-				const [joined] = stringified
 
 				if (UPDATE_SNAPSHOT) {
-					test.text = [...text]
-					test.joined = joined
+					snapshot.paragraphs = [...actual.paragraphs()]
 				} else {
-					assertEquals([...test.text], [...text])
-					assertEquals(test.joined, joined)
+					assertEquals([...actual.paragraphs()], [...snapshot.paragraphs])
 				}
 			})
 		}
 
 		if (UPDATE_SNAPSHOT) {
-			await Deno.writeTextFile('./src/fixtures/snapshot.json', JSON.stringify(tests, null, '\t') + '\n')
+			await Deno.writeTextFile('./src/fixtures/snapshot.json', JSON.stringify(snapshots, null, '\t') + '\n')
 			Deno.exit()
 		}
 	})

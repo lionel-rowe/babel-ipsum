@@ -53,10 +53,6 @@ export function createConfig(
 		.filter(Boolean)
 		.filter((x) => x.length > 20 /* chars */)
 
-	// if (locale === 'ja') {
-	// 	console.log(sentences.filter(x=>!/\p{P}\s*$/u.test(x)))
-	// }
-
 	const medialPunctMap = new Map<string, number>()
 
 	const medialPunct: string[] = []

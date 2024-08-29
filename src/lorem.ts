@@ -53,10 +53,10 @@ const defaultGenerateOptions: GenerateOptions = {
 }
 
 class TextContents extends Array {
-	#sentenceSeparator: string = ' '
+	#sentenceSeparator!: string
 
 	static fromParts(textParts: string[][], sentenceSeparator: string): TextContents {
-		const p = new TextContents(...textParts)
+		const p = new this(...textParts)
 		p.#sentenceSeparator = sentenceSeparator
 		return p
 	}
