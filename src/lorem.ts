@@ -194,12 +194,18 @@ export class LoremBabel {
 		return firstChar.toLocaleUpperCase(this.config.locale) + str.slice(firstChar.length)
 	}
 
-	#sentence(options: Pick<GenerateOptions, 'wordsPerSentence'>): string {
+	#sentence(options: {
+		isLastOfParagraph: boolean
+		wordsPerSentence: LengthBoundaries | number
+	}): string {
 		const { min, max } = getLengthBoundaries(options.wordsPerSentence)
 		const length = this.#randBetween(min, max)
 
 		const words = this.words()
-		const { start, end } = this.#weighted(this.config.sentenceWrappers)
+
+		const { start, end } = options.isLastOfParagraph
+			? this.config.sentenceWrappers[0]!
+			: this.#weighted(this.config.sentenceWrappers)
 
 		return (start ?? '') + this.#capitalize(
 			Array.from({ length }).flatMap((_, i) => {
@@ -220,8 +226,11 @@ export class LoremBabel {
 		const { min, max } = getLengthBoundaries(options.sentencesPerParagraph)
 		const length = this.#randBetween(min, max)
 
-		return Array.from({ length }, () => {
-			return this.#sentence(options)
+		return Array.from({ length }, (_, i) => {
+			return this.#sentence({
+				...options,
+				isLastOfParagraph: i === length - 1,
+			})
 		})
 	}
 

@@ -1,8 +1,7 @@
 import { LoremBabel, type LoremBabelConfig } from './mod.ts'
-import { assertEquals, assertThrows } from '@std/assert'
+import { assert, assertArrayIncludes, assertEquals, assertMatch, assertThrows } from '@std/assert'
 import snapshot from './fixtures/snapshot.json' with { type: 'json' }
 import { type Locale, locales } from '../scripts/scrape.ts'
-import vi from './configs/vi.ts'
 
 const configs = Object.fromEntries(
 	await Promise.all(['lorem', ...locales].map(async (locale) => {
@@ -49,7 +48,6 @@ Deno.test(LoremBabel.name, async (t) => {
 			locale: 'en',
 			vocabulary: [{ word: 'word', weight: 1 }],
 		})
-		lorem.random = prng(SEED)
 		// @ts-expect-error https://github.com/tc39/proposal-iterator-helpers types not in TypeScript yet
 		const words: string[] = lorem.words().take(5).toArray()
 		assertEquals(words, ['word', 'word', 'word', 'word', 'word'])
@@ -57,7 +55,6 @@ Deno.test(LoremBabel.name, async (t) => {
 
 	await t.step('allows overriding the first sentence', () => {
 		const lorem = new LoremBabel(configs.lorem)
-		lorem.random = prng(SEED)
 		const text = lorem.text({
 			paragraphsPerText: { min: 1, max: 1 },
 			sentencesPerParagraph: { min: 3, max: 3 },
@@ -66,71 +63,55 @@ Deno.test(LoremBabel.name, async (t) => {
 
 		text[0][0] = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
 
-		assertEquals(
+		assertMatch(
 			text.toString(),
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Res sunt igitur est et se est erant ipsos si affectus locus esse non quem ea vera bene. Et negant te noster sed maximis aut quam magis quae cognitionem, ratio bona, democritum tamen de enim rationibus ad e.',
+			/^Lorem ipsum dolor sit amet, consectetur adipiscing elit\.[\s\S]+/,
 		)
 	})
 
 	await t.step('scalar word boundaries', () => {
 		const lorem = new LoremBabel(configs.lorem)
-		lorem.random = prng(SEED)
 		const text = lorem.text({
 			wordsPerSentence: 10,
 			paragraphsPerText: 1,
 			sentencesPerParagraph: 1,
 		})
 
+		const str = text.toString()
 		assertEquals(
-			text.toString(),
-			'Hoc sensibus non homini, hoc ipsa, ab sed me se.',
+			[...new Intl.Segmenter('en-US', { granularity: 'word' }).segment(str)].filter((x) => x.isWordLike).length,
+			10,
 		)
+		assert(!str.includes('\n'))
 	})
 
-	await t.step('with preloaded config and default generate options', () => {
-		const lorem = new LoremBabel(vi)
-		lorem.random = prng(SEED)
-		const result = lorem.text()
+	await t.step(
+		'with default config, `toString` converts to newline-delimited paragraphs and `sentenceSeparator`-delimited sentences',
+		() => {
+			const lorem = new LoremBabel({
+				locale: 'en',
+				vocabulary: [{ word: 'word', weight: 1 }],
+				sentenceSeparator: '!',
+				wordSeparators: [{ weight: 1, separator: '-' }],
+				sentenceWrappers: [{ weight: 1, start: '[', end: ']' }],
+			})
 
-		assertEquals(
-			Array.from(result),
-			[
-				[
-					'Nguồn nằm mã quan nguồn cả ngữ sửa người utf công thì chữ nhiều.',
-					'Nhật ngôn đã unicode mã những được đặt năm trong ucs duy tự ký byte như nhóm cái.',
-					'Các qof iso cầu sửa nén một hóa thế là hebrew hạn đích lotus việc dùng utf tùy chữ viết.',
-				],
-				[
-					'Mã các số một ký có sẵn hỗ nó niệm.',
-					'Được các khích cầu chữ nhiên khác phông biểu mime nguồn iso mới utf.',
-					'Ở ngữ các jis byte chuẩn khi thể biến của phẳng nguồn đảm ký một cả utf sửa trước trang.',
-					'Còn tiêu để thêm nguồn là không từ âm thấy bổ tắc utf nhiều không hoa đã chọn đầu như consortium các.',
-					'Thích người gán những là bằng unicode sửa mã hoặc thì.',
-				],
-				[
-					'Loại các kiếm cho trữ u kho chuỗi thành ả.',
-					'Nó ngoài đây là nhiên hợp trừ nhất thống unicode đặt dùng mã số chữ phải text nơi.',
-					'Trang bit ngoài systems cực chữ chẽ các tính sử được đó để khác việc theo.',
-					'Hơn cho ảnh những nằm được mặt ký hợp chọn cái đến trong mới điều unicode collation html tiết dù.',
-				],
-			],
-		)
-
-		assertEquals(
-			result.toString(),
-			`Nguồn nằm mã quan nguồn cả ngữ sửa người utf công thì chữ nhiều. Nhật ngôn đã unicode mã những được đặt năm trong ucs duy tự ký byte như nhóm cái. Các qof iso cầu sửa nén một hóa thế là hebrew hạn đích lotus việc dùng utf tùy chữ viết.
-
-Mã các số một ký có sẵn hỗ nó niệm. Được các khích cầu chữ nhiên khác phông biểu mime nguồn iso mới utf. Ở ngữ các jis byte chuẩn khi thể biến của phẳng nguồn đảm ký một cả utf sửa trước trang. Còn tiêu để thêm nguồn là không từ âm thấy bổ tắc utf nhiều không hoa đã chọn đầu như consortium các. Thích người gán những là bằng unicode sửa mã hoặc thì.
-
-Loại các kiếm cho trữ u kho chuỗi thành ả. Nó ngoài đây là nhiên hợp trừ nhất thống unicode đặt dùng mã số chữ phải text nơi. Trang bit ngoài systems cực chữ chẽ các tính sử được đó để khác việc theo. Hơn cho ảnh những nằm được mặt ký hợp chọn cái đến trong mới điều unicode collation html tiết dù.`,
-		)
-	})
+			assertEquals(
+				lorem.text({
+					wordsPerSentence: 3,
+					paragraphsPerText: 2,
+					sentencesPerParagraph: 2,
+				}).toString(),
+				`[Word-word-word]![Word-word-word]\n\n[Word-word-word]![Word-word-word]`,
+			)
+		},
+	)
 
 	type Result = { text: string[][]; joined: string }
 	type Tests = Record<keyof typeof configs, Result>
 	const blankTest: Result = { text: [], joined: '' }
 	const blankTests = Object.fromEntries(Object.keys(configs).map((k) => [k, { ...blankTest }])) as Tests
-	const tests: Tests = Deno.env.get('UPDATE_SNAPSHOT') ? blankTests : snapshot
+	const tests: Tests = Deno.env.get('UPDATE_SNAPSHOT') ? blankTests : snapshot as Tests
 
 	await t.step('snapshots', async (t) => {
 		for (const [key, test] of Object.entries(tests)) {
@@ -175,5 +156,111 @@ Loại các kiếm cho trữ u kho chuỗi thành ả. Nó ngoài đây là nhi�
 			await Deno.writeTextFile('./src/fixtures/snapshot.json', JSON.stringify(tests, null, '\t') + '\n')
 			Deno.exit()
 		}
+	})
+})
+
+Deno.test('configs', async (t) => {
+	await t.step('sanity checks', async (t) => {
+		const SP = ' '
+		const EMPTY = ''
+		const LATIN_PERIOD = '.'
+		const CJK_PERIOD = '。'
+
+		await t.step('sentenceSeparator', () => {
+			for (
+				const [locale, expected] of [
+					['ar', SP],
+					['cs', SP],
+					['de', SP],
+					['es', SP],
+					['got', SP],
+					['ja', EMPTY],
+					['lorem', SP],
+					['ru', SP],
+					['th', EMPTY],
+					['tr', SP],
+					['vi', SP],
+					['zh', EMPTY],
+				] as const
+			) {
+				const actual = configs[locale].sentenceSeparator
+				assertEquals(
+					actual,
+					expected,
+					`Unexpected sentenceSeparator for ${locale}: expected ${expected}, got ${actual}`,
+				)
+			}
+		})
+
+		await t.step('wordSeparators', () => {
+			for (
+				const [locale, expected] of [
+					['ar', SP],
+					['cs', SP],
+					['de', SP],
+					['es', SP],
+					['got', SP],
+					['ja', EMPTY],
+					['lorem', SP],
+					['ru', SP],
+					['th', EMPTY],
+					['tr', SP],
+					['vi', SP],
+					['zh', EMPTY],
+				] as const
+			) {
+				const actual = configs[locale].wordSeparators?.[0].separator
+				assertEquals(
+					actual,
+					expected,
+					`Unexpected wordSeparators for ${locale}: expected ${expected}, got ${actual}`,
+				)
+			}
+		})
+
+		await t.step('sentenceWrappers', () => {
+			for (
+				const [locale, expected] of [
+					['ar', LATIN_PERIOD],
+					['cs', LATIN_PERIOD],
+					['de', LATIN_PERIOD],
+					['es', LATIN_PERIOD],
+					['got', LATIN_PERIOD],
+					['ja', CJK_PERIOD],
+					['lorem', LATIN_PERIOD],
+					['ru', LATIN_PERIOD],
+					['th', EMPTY],
+					['tr', LATIN_PERIOD],
+					['vi', LATIN_PERIOD],
+					['zh', CJK_PERIOD],
+				] as const
+			) {
+				const actual = configs[locale].sentenceWrappers?.[0].end
+				assertEquals(
+					actual,
+					expected,
+					`Unexpected wordSeparators for ${locale}: expected ${expected}, got ${actual}`,
+				)
+			}
+		})
+
+		await t.step('vocabulary', () => {
+			for (
+				const [locale, expected] of [
+					['de', ['das']],
+					['es', ['como']],
+					['ja', ['の']],
+					['lorem', ['lorem']],
+					['ru', ['это']],
+					['zh', ['的']],
+				] as const
+			) {
+				assertArrayIncludes(
+					configs[locale].vocabulary.map((x) => x.word),
+					expected,
+					`Missing common vocabulary items for ${locale}: ${JSON.stringify(expected)}`,
+				)
+			}
+		})
 	})
 })

@@ -1,6 +1,6 @@
-import { Irregex } from 'https://raw.githubusercontent.com/lionel-rowe/irregex/ea91b391ba95d270e97fd74a087fb5efe3dee8bd/irregex.ts'
+import { Irregex, type Matcher } from '@li/irregex'
 import { createConfig } from '../src/config.ts'
-import type { LoremBabel, LoremBabelConfig } from '../src/mod.ts'
+import type { LoremBabelConfig } from '../src/mod.ts'
 import type { Locale } from './scrape.ts'
 import scraped from './scraped/all.json' with { type: 'json' }
 
@@ -24,7 +24,12 @@ function configFromScraped(
 class PartiallyLowerCaseWordMatcher extends Irregex {
 	regex: RegExp
 
-	constructor(scriptId: string, private minLength = 1, private exceptions: string[] = []) {
+	constructor(
+		scriptId: string,
+		public locale: Locale,
+		private minLength = 1,
+		private minLengthExceptions: string[] = [],
+	) {
 		super()
 		this.regex = new RegExp(String.raw`^[\p{scx=${scriptId}}\p{M}]+$`, 'v')
 		this.trackLastIndex = [this.regex]
@@ -33,86 +38,61 @@ class PartiallyLowerCaseWordMatcher extends Irregex {
 	getMatch(str: string): RegExpExecArray | null {
 		const result = this.regex.exec(str)
 		if (!result) return null
+
 		const [m] = result
-		if (m.toUpperCase() === m) return null
-		if (m.length < this.minLength && !this.exceptions.includes(m)) return null
+		if (m.toLocaleUpperCase(this.locale) === m) return null
+		if (m.length < this.minLength && !this.minLengthExceptions.includes(m)) return null
 
 		return result
 	}
 }
 
 export const metaConfigs = {
-	lorem: {},
-	en: {
-		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 2, ['a']),
-	},
-	zh: {
-		wordMatcher: /^\p{scx=Han}+$/u,
-		sentenceSeparator: '',
-		wordSeparators: [
-			{ weight: 5, separator: '' },
-			{ weight: 0.075, separator: '，' },
-			{ weight: 0.0005, separator: '：' },
-			{ weight: 0.001, separator: '、' },
-		],
-		sentenceWrappers: [
-			{ weight: 1, end: '。' },
-			{ weight: 0.01, end: '？' },
-			{ weight: 0.005, end: '！' },
-		],
-	},
 	ar: {
 		wordMatcher: /^[\p{scx=Arab}\p{M}]+$/u,
-		wordSeparators: [{ weight: 1, separator: ' ' }],
-		sentenceWrappers: [{ weight: 1, end: '.' }],
-	},
-	es: {
-		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn'),
-		sentenceWrappers: [
-			{ weight: 1, end: '.' },
-			{ weight: 0.01, start: '¿', end: '?' },
-			{ weight: 0.005, start: '¡', end: '!' },
-		],
-	},
-	tr: {
-		wordMatcher: /^[\p{scx=Latn}\p{M}]+$/u,
-		wordSeparators: [{ weight: 1, separator: ' ' }],
-		sentenceWrappers: [{ weight: 1, end: '.' }],
-	},
-	th: {
-		wordMatcher: /^[\p{scx=Thai}\p{M}]+$/u,
-		wordSeparators: [{ weight: 1, separator: '' }],
-		sentenceWrappers: [{ weight: 1, end: '' }],
-		sentenceSeparator: ' ',
-	},
-	vi: {
-		wordMatcher: /^[\p{scx=Latn}\p{M}]+$/u,
-		wordSeparators: [{ weight: 1, separator: ' ' }],
-		sentenceWrappers: [{ weight: 1, end: '.' }],
 	},
 	cs: {
-		wordMatcher: /^[\p{scx=Latn}\p{M}]+$/u,
-		wordSeparators: [{ weight: 1, separator: ' ' }],
-		sentenceWrappers: [{ weight: 1, end: '.' }],
-	},
-	ru: {
-		wordMatcher: /^[\p{scx=Cyrl}\p{M}]+$/u,
-		wordSeparators: [{ weight: 1, separator: ' ' }],
-		sentenceWrappers: [{ weight: 1, end: '.' }],
+		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'cs'),
 	},
 	de: {
-		wordMatcher: /^[\p{scx=Latn}\p{M}]+$/u,
-		wordSeparators: [{ weight: 1, separator: ' ' }],
-		sentenceWrappers: [{ weight: 1, end: '.' }],
+		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'de', 2),
+	},
+	el: {
+		wordMatcher: new PartiallyLowerCaseWordMatcher('Greek', 'el', 2),
+	},
+	en: {
+		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'en', 2, ['a']),
+	},
+	es: {
+		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'es', 2, ['y', 'a', 'o', 'u', 'e']),
 	},
 	got: {
 		wordMatcher: /^[\p{scx=Goth}\p{M}]+$/u,
-		wordSeparators: [{ weight: 1, separator: ' ' }],
-		sentenceWrappers: [{ weight: 1, end: '.' }],
+	},
+	ja: {
+		wordMatcher: /^[\p{scx=Han}\p{scx=Hira}\p{scx=Kana}]+$/u,
+	},
+	lorem: {},
+	ru: {
+		wordMatcher: new PartiallyLowerCaseWordMatcher('Cyrl', 'ru', 2, ['в', 'с', 'у']),
+	},
+	th: {
+		wordMatcher: /^[\p{scx=Thai}\p{M}]+$/u,
+	},
+	tr: {
+		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'tr'),
+	},
+	vi: {
+		wordMatcher: new PartiallyLowerCaseWordMatcher('Latn', 'vi'),
+	},
+	zh: {
+		wordMatcher: /^\p{scx=Han}+$/u,
 	},
 } satisfies Record<
 	Locale,
-	Omit<ConfigFromScrapedConfig, 'locale'> & Partial<Omit<ConstructorParameters<typeof LoremBabel>[0], 'vocabulary'>>
+	{
+		wordMatcher?: Matcher
+	}
 >
 
 await Promise.all(

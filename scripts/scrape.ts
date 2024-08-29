@@ -1,67 +1,121 @@
 import { load } from 'cheerio'
 import { AnchorMe } from 'irregex/matchers/anchorme.ts'
 
-// // TODO: add 'tr', 'th', 'vi', 'cs', 'ru', 'de'
-export const locales = ['lorem', 'en', 'es', 'zh', 'ar', 'tr', 'th', 'vi', 'cs', 'ru', 'de', 'got'] as const
+export const locales = [
+	'ar',
+	'cs',
+	'de',
+	'en',
+	'el',
+	'es',
+	'got',
+	'ja',
+	'lorem',
+	'ru',
+	'th',
+	'tr',
+	'vi',
+	'zh',
+] as const
 export type Locale = typeof locales[number]
 type ScrapeConfig = {
 	url: string | URL
-	selector: string
+	parentSelector: string
+	childBlocksSelector?: string
 	rejector?: string
 	prepend?: string
 }
+
+const OVERWRITE_LOCALES = (() => {
+	const str = Deno.env.get('OVERWRITE_LOCALES')?.trim() ?? ''
+	return str === '*'
+		? locales
+		: str.split(',').filter(Boolean).filter((x) => locales.includes(x as Locale)) as readonly Locale[]
+})()
+
 function wikiConfig(locale: string): ScrapeConfig {
 	return {
 		url: `https://${locale}.wikipedia.org/wiki/Unicode`,
-		selector: '#mw-content-text, .mw-body-content',
-		rejector: 'script, style, noscript, .listaref, ul, ol, table',
+		parentSelector: '#mw-content-text, .mw-body-content',
+		childBlocksSelector: 'p',
+		rejector:
+			'script, style, noscript, .listaref, ul, ol, table, [class*=not-searchable], [role=navigation], .reflist',
 	}
 }
 
 const scrapeConfigs: Record<Locale, ScrapeConfig> = {
-	lorem: {
-		url: 'https://la.wikisource.org/wiki/De_finibus_bonorum_et_malorum/Liber_Primus',
-		selector: '#mw-content-text .text',
-		prepend: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-	},
-	en: wikiConfig('en'),
-	es: wikiConfig('es'),
-	zh: wikiConfig('zh'),
 	ar: wikiConfig('ar'),
-
-	tr: wikiConfig('tr'),
-	th: wikiConfig('th'),
-	vi: wikiConfig('vi'),
 	cs: wikiConfig('cs'),
-	ru: wikiConfig('ru'),
 	de: wikiConfig('de'),
-
+	en: wikiConfig('en'),
+	el: wikiConfig('el'),
+	es: wikiConfig('es'),
 	got: {
 		...wikiConfig('got'),
-		url: 'https://got.wikipedia.org/wiki/%F0%90%8C%B2%F0%90%8C%BF%F0%90%8D%84%F0%90%8D%82%F0%90%8C%B0%F0%90%8C%B6%F0%90%8C%B3%F0%90%8C%B0',
+		// = /wiki/Unicode
+		url: 'https://got.wikipedia.org/wiki/𐌲𐌿𐍄𐍂𐌰𐌶𐌳𐌰',
 	},
+	ja: wikiConfig('ja'),
+	lorem: {
+		url: 'https://la.wikisource.org/wiki/De_finibus_bonorum_et_malorum/Liber_Primus',
+		parentSelector: '#mw-content-text .text',
+		prepend: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+	},
+	ru: wikiConfig('ru'),
+	th: {
+		...wikiConfig('th'),
+		// = /wiki/Computer (Unicode article is too short)
+		url: 'https://th.wikipedia.org/wiki/คอมพิวเตอร์',
+	},
+	tr: wikiConfig('tr'),
+	vi: wikiConfig('vi'),
+	zh: wikiConfig('zh'),
 }
 
 if (import.meta.main) {
-	const configs = Object.fromEntries(
-		await Promise.all(
-			Object.entries(scrapeConfigs).map(async ([locale, config]) => {
-				const { url, selector, rejector, prepend } = config
-				const res = await fetch(url)
-				const $ = load(await res.text())
+	const filePath = './scripts/scraped/all.json'
+	const configs: Record<Locale, { content: string; url: string }> = JSON.parse(await Deno.readTextFile(filePath))
+	const existing = new Set(Object.keys(configs) as Locale[])
 
-				const $content = $(selector).eq(0)
+	const written: Locale[] = []
+
+	await Promise.all(
+		Object.entries(scrapeConfigs).map(async ([_locale, config]) => {
+			const locale = _locale as Locale
+
+			if (existing.has(locale) && !OVERWRITE_LOCALES.includes(locale)) return
+
+			const { url, parentSelector, childBlocksSelector, rejector, prepend } = config
+			const res = await fetch(url)
+			const $ = load(await res.text())
+
+			const $content = $(parentSelector).eq(0).find(childBlocksSelector ?? 'p')
+
+			if (rejector) {
 				$content.find(rejector).remove()
+			}
 
-				const content = [
-					prepend,
-					new AnchorMe()[Symbol.replace]($content.text(), ''),
-				].filter(Boolean).join('\n\n')
+			const content = [
+				prepend,
+				new AnchorMe()[Symbol.replace](
+					[...$content].map((x) => $(x).text().replaceAll(/\s+/g, ' ').trim()).join('\n\n'),
+					' ',
+				),
+			].filter(Boolean).join('\n\n')
 
-				return [locale, { content, url }] as const
-			}),
-		),
-	) as Record<Locale, { content: string; url: string }>
+			configs[locale] = { content, url: url.toString() }
+			written.push(locale)
+		}),
+	)
 
-	await Deno.writeTextFile('./scripts/scraped/all.json', JSON.stringify(configs, null, '\t') + '\n')
+	await Deno.writeTextFile(
+		filePath,
+		JSON.stringify(
+			Object.fromEntries(Object.entries(configs).sort(([a], [b]) => a.localeCompare(b))),
+			null,
+			'\t',
+		) + '\n',
+	)
+
+	console.info(`Wrote ${written.length} locales: ${JSON.stringify(written)}`)
 }
