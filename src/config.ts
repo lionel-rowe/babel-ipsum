@@ -62,11 +62,6 @@ export function createConfig(
 	// we assume `content` is formatted in `\n\n`-separated paragraphs with no additional intra-paragraph whitespace other
 	// than single spaces (per the scraping logic)
 
-	if (semanticCapitalization) {
-		// wordMatcher = new RegExp(String.raw`^[\p{scx=${locale}}\p{M}]+$`, 'v')
-		console.log(locale)
-	}
-
 	const vocabulary = contentToVocabulary({
 		content,
 		locale,

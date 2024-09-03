@@ -44,6 +44,12 @@ function wikiConfig(locale: string): ScrapeConfig {
 }
 
 const scrapeConfigs: Record<Locale, ScrapeConfig> = {
+	// // TODO: `ang` (Old English)
+	// ang: {
+	// 	...wikiConfig('ang'),
+	// 	// = /wiki/Capital_city
+	// 	url: 'https://ang.wikipedia.org/wiki/Heafodstol',
+	// },
 	ar: wikiConfig('ar'),
 	cs: wikiConfig('cs'),
 	de: wikiConfig('de'),

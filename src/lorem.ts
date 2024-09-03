@@ -47,11 +47,11 @@ type GenerateOptions = {
 	paragraphsPerText: number | LengthBoundaries
 }
 
-const defaultGenerateOptions: GenerateOptions = {
-	wordsPerSentence: { min: 8, max: 25 },
-	sentencesPerParagraph: { min: 3, max: 5 },
-	paragraphsPerText: { min: 3, max: 5 },
-}
+const defaultGenerateOptions = {
+	wordsPerSentence: { min: 8 as const, max: 25 as const },
+	sentencesPerParagraph: { min: 3 as const, max: 5 as const },
+	paragraphsPerText: { min: 3 as const, max: 5 as const },
+} satisfies GenerateOptions
 
 class TextContents extends Array {
 	#sentenceSeparator!: string
@@ -93,6 +93,21 @@ function assertNonEmpty<T>(array: readonly T[], msg?: string): asserts array is 
 
 /**
  * Generate paragraphs, sentences, and individual words of text in a variety of languages.
+ *
+ * @example
+ *
+ * ```ts
+ * import { LoremBabel } from '@li/lorem-babel'
+ * import ja from '@li/lorem-babel/locales/ja'
+ *
+ * const lorem = new LoremBabel(ja)
+ *
+ * lorem.words().take(5).toArray()
+ * // [ "は", "代用", "さ", "ビット", "は" ]
+ *
+ * lorem.text().toString()
+ * // 管轄でたをたのは収録ある分にで位置中国は万-で本質後...
+ * ```
  */
 export class LoremBabel {
 	readonly config: LoremBabelConfigFull
@@ -126,19 +141,18 @@ export class LoremBabel {
 	 * @example
 	 *
 	 * ```ts
-	 * import { LoremBabel } from 'lorem-babel/mod.ts'
-	 * import config from 'lorem-babel/configs/lorem.ts'
+	 * import { LoremBabel } from '@li/lorem-babel'
+	 * import vi from '@li/lorem-babel/locales/vi'
 	 *
-	 * const lorem = new LoremBabel(config)
+	 * const lorem = new LoremBabel(vi)
 	 * const text = lorem.text({
 	 * 	wordsPerSentence: { min: 5, max: 10 },
 	 * 	sentencesPerParagraph: { min: 2, max: 3 },
 	 * 	paragraphsPerText: { min: 3, max: 3 },
 	 * })
 	 * // TextContents(3) [ ... ]
-	 *
 	 * text.toString()
-	 * // "Euismod hac gravida nulla mattis mi habitasse! Taciti sem vel felis nunc est.\n\nNulla, sed mollis netus facilisi varius cum natoque sapien laoreet. Turpis inceptos, vehicula rhoncus, integer litora luctus. Feugiat eget, sapien erat in sed phasellus, curabitur!\n\nHabitasse auctor vulputate dolor donec lacus tempus consectetur. Blandit taciti neque primis nulla sociis. Quis mi venenatis senectus habitasse varius."
+	 * // "Năng bởi sử-trong nhất tự. Hợp ra mặc đầu khác. Có nó chữ mặt phân các thêm chẽ dù.\n\nCác bit chính, tự có trong trái được pair escape. Nhỏ ký các phần ký khi khuyến ban. Một mở tốn từ và bố số mục ở.\n\nNhững các đã hình hệ. Nhiều trùm nếu pháp cũ, số cho số. Lưu sự lý kỳ trong hiện giá có."
 	 * ```
 	 */
 	text(options?: Partial<GenerateOptions>): TextContents {
@@ -160,12 +174,12 @@ export class LoremBabel {
 	 *
 	 * @example
 	 * ```ts
-	 * import { LoremBabel } from 'lorem-babel/mod.ts'
-	 * import config from 'lorem-babel/configs/lorem.ts'
+	 * import { LoremBabel } from '@li/lorem-babel'
+	 * import el from '@li/lorem-babel/locales/el'
 	 *
-	 * const lorem = new LoremBabel(config)
+	 * const lorem = new LoremBabel(el)
 	 * lorem.words().take(5).toArray()
-	 * // example output: [ "ultrices", "suscipit", "donec", "proin", "est" ]
+	 * // example output: [ "τα", "χαρακτήρων", "προς", "στις", "στο" ]
 	 * ```
 	 */
 	*words(): Generator<string, never, undefined> {
